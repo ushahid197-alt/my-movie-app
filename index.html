@@ -1,29 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CineVerse — Movies Around the World</title>
+<style>
+:root{--bg:#0b0e14;--panel:#141923;--panel2:#1b2230;--text:#f3f5f8;--muted:#9ba6b7;--accent:#16a6df;--accent2:#0879b4;--line:#283244}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,Arial,sans-serif}button,input,select{font:inherit}button{cursor:pointer}
+header{position:sticky;top:0;z-index:10;background:#10151df2;backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.nav{max-width:1450px;margin:auto;min-height:72px;padding:12px 22px;display:flex;align-items:center;gap:24px}.logo{font-weight:900;letter-spacing:-1px;font-size:25px;white-space:nowrap}.logo span{color:var(--accent)}nav{display:flex;gap:18px;align-items:center;flex:1;flex-wrap:wrap}nav a{color:#d9e0e9;text-decoration:none;font-size:13px;font-weight:700;cursor:pointer}nav a:hover{color:var(--accent)}
+.search{display:flex;min-width:210px;max-width:320px;flex:1}.search input{width:100%;background:#202837;color:white;border:1px solid #354154;padding:11px 13px;border-radius:8px 0 0 8px;outline:none}.search button,.primary{background:var(--accent);border:0;color:white;font-weight:800;padding:0 15px;border-radius:0 8px 8px 0}
+main{max-width:1450px;margin:auto;padding:20px 22px 60px}.hero{height:390px;border-radius:16px;overflow:hidden;position:relative;background:linear-gradient(90deg,#07101beF 0%,#07101b9c 50%,#07101b10 100%),url('https://image.tmdb.org/t/p/original/8b8R8l88Qje9dn9OE8PY05Nxl1X.jpg') center 30%/cover,#182332;display:flex;align-items:end;padding:36px;margin-bottom:24px}.hero-content{max-width:580px}.eyebrow{color:#66d2ff;text-transform:uppercase;font-size:12px;font-weight:900;letter-spacing:2px}.hero h1{font-size:clamp(32px,5vw,58px);line-height:1.02;margin:12px 0}.hero p{color:#d5dce5;line-height:1.6;max-width:550px}.hero-actions{display:flex;gap:10px;flex-wrap:wrap}.primary,.secondary{padding:12px 17px;border-radius:8px;border:1px solid transparent}.secondary{background:#ffffff18;color:white;border-color:#ffffff55}.notice{font-size:13px;color:#c9eaff;background:#0b3650;border:1px solid #165a7e;border-radius:10px;padding:13px 16px;margin-bottom:26px;line-height:1.5}
+.toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:20px 0}.toolbar h2{font-size:22px;margin:0}.filters{display:flex;gap:9px;flex-wrap:wrap}.filters select,.filters input{background:var(--panel);border:1px solid var(--line);color:white;padding:10px;border-radius:8px;max-width:100%}
+.tabs{display:flex;gap:8px;overflow:auto;padding:3px 0 14px;margin-bottom:10px}.tab{white-space:nowrap;background:var(--panel);border:1px solid var(--line);color:#cbd5e1;padding:10px 14px;border-radius:8px}.tab.active,.tab:hover{background:var(--accent2);border-color:var(--accent2);color:white}
+.grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:18px}.card{background:var(--panel);border:1px solid #202938;border-radius:12px;overflow:hidden;transition:transform .18s,border-color .18s;min-width:0}.card:hover{transform:translateY(-4px);border-color:#237fb1}.poster{aspect-ratio:2/3;background:#202a38;position:relative;overflow:hidden}.poster img{width:100%;height:100%;object-fit:cover;display:block}.rating{position:absolute;top:9px;left:9px;background:#0b111bdc;border:1px solid #ffffff20;padding:5px 7px;border-radius:6px;font-size:12px;font-weight:800}.card-info{padding:11px}.card h3{font-size:14px;margin:0 0 7px;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}.meta{color:var(--muted);font-size:12px;display:flex;justify-content:space-between;gap:5px}.card-info button{width:100%;margin-top:10px;background:#202d40;color:#d9f3ff;border:1px solid #34455d;border-radius:7px;padding:8px;font-size:12px;font-weight:800}.card-info button:hover{background:#0b628d}
+.status{text-align:center;color:var(--muted);padding:28px}.pagination{display:flex;justify-content:center;gap:10px;margin:26px 0}.pagination button{padding:10px 18px;background:var(--panel2);color:white;border:1px solid var(--line);border-radius:8px}
+footer{border-top:1px solid var(--line);color:var(--muted);text-align:center;padding:25px;font-size:13px}.modal{position:fixed;inset:0;z-index:30;background:#000b;display:none;align-items:center;justify-content:center;padding:18px}.modal.open{display:flex}.modal-box{background:#141b26;border:1px solid #344154;border-radius:14px;max-width:850px;width:100%;max-height:90vh;overflow:auto;position:relative}.modal-inner{display:grid;grid-template-columns:220px 1fr;gap:24px;padding:24px}.modal-inner img{width:100%;border-radius:10px}.close{position:absolute;right:12px;top:12px;background:#283448;color:white;border:0;border-radius:50%;width:34px;height:34px;font-size:20px}.modal h2{margin:8px 40px 10px 0}.modal p{color:#c2ccda;line-height:1.65}.chips{display:flex;gap:6px;flex-wrap:wrap}.chip{background:#243246;border-radius:20px;padding:6px 10px;font-size:12px}
+.api-panel{background:#141923;border:1px solid var(--line);border-radius:12px;padding:16px;margin:0 0 22px}.api-panel summary{cursor:pointer;font-weight:800}.api-row{display:flex;gap:9px;margin-top:12px}.api-row input{min-width:0;flex:1;background:#0b0e14;border:1px solid var(--line);border-radius:8px;color:white;padding:11px}.api-row button{background:#0879b4;color:white;border:0;border-radius:8px;padding:0 14px;font-weight:800}.small{font-size:12px;color:var(--muted);line-height:1.5;margin-bottom:0}
+@media(max-width:1100px){.grid{grid-template-columns:repeat(4,minmax(0,1fr))}.nav{gap:14px}nav{gap:10px}}
+@media(max-width:720px){.nav{flex-wrap:wrap;padding:12px 15px}.logo{flex:1}nav{order:3;flex-basis:100%;overflow:auto;flex-wrap:nowrap;padding:5px 0}nav a{white-space:nowrap}.search{max-width:none;flex-basis:100%;order:4}.hero{height:330px;padding:23px}.hero p{font-size:14px}.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}main{padding:14px}.modal-inner{grid-template-columns:100px 1fr;gap:14px;padding:16px}.modal h2{font-size:20px}}
+</style>
+</head>
+<body>
+<header><div class="nav">
+  <div class="logo">CINE<span>VERSE</span></div>
+  <nav>
+    <a data-mode="trending">TRENDING</a><a data-mode="popular">POPULAR</a><a data-mode="now_playing">NOW PLAYING</a><a data-mode="top_rated">TOP RATED</a><a data-mode="upcoming">UPCOMING</a><a data-mode="tv">TV SERIES</a>
+  </nav>
+  <form class="search" id="searchForm"><input id="searchInput" placeholder="Search movies, shows..." aria-label="Search movies"><button type="submit" aria-label="Search">⌕</button></form>
+</div></header>
+<main>
+  <section class="hero"><div class="hero-content"><div class="eyebrow">Your global movie destination</div><h1>Discover your next favourite.</h1><p>Explore films and series from around the world — new releases, timeless classics, audience favourites and hidden gems.</p><div class="hero-actions"><button class="primary" id="exploreBtn">Explore Movies ↓</button><button class="secondary" id="heroTrending">🔥 Trending Now</button></div></div></section>
+  <div class="notice">Live catalogue powered by TMDB. Add your own free TMDB API key below to load current movie information. This site provides discovery and metadata; it does not host or stream copyrighted films.</div>
+  <details class="api-panel" id="apiPanel"><summary>⚙ Set up live movie updates (TMDB API key)</summary><div class="api-row"><input id="apiKey" type="password" placeholder="Paste your TMDB API Read Access Token or API key"><button id="saveKey">Save & Load</button></div><p class="small">Get a key from <b>themoviedb.org</b> → profile → Settings → API. For this single-file demo, the key is saved only in this browser's local storage. Do not use a private token on a public/shared computer. If a long Read Access Token is used, it is sent as a Bearer token; a short API key is sent as an api_key parameter.</p></details>
+  <div class="toolbar"><h2 id="sectionTitle">Trending Movies</h2><div class="filters"><select id="genreFilter" aria-label="Filter by genre"><option value="">All genres</option></select><select id="languageFilter" aria-label="Filter by language"><option value="">All languages</option><option value="hi">Hindi</option><option value="en">English</option><option value="ko">Korean</option><option value="ja">Japanese</option><option value="ta">Tamil</option><option value="te">Telugu</option><option value="es">Spanish</option><option value="fr">French</option></select><select id="yearFilter" aria-label="Filter by year"><option value="">Any year</option></select></div></div>
+  <div class="tabs" id="categoryTabs">
+    <button class="tab active" data-mode="trending">Trending</button><button class="tab" data-mode="popular">Popular</button><button class="tab" data-mode="now_playing">In Theatres</button><button class="tab" data-mode="top_rated">Top Rated</button><button class="tab" data-mode="upcoming">Coming Soon</button><button class="tab" data-mode="classics">Classics</button><button class="tab" data-mode="tv">TV Series</button>
+  </div>
+  <div id="status" class="status">Loading sample catalogue…</div><div class="grid" id="movieGrid"></div>
+  <div class="pagination"><button id="prevBtn">← Previous</button><span id="pageLabel" class="status" style="padding:10px">Page 1</span><button id="nextBtn">Next →</button></div>
+</main>
+<footer>© <span id="yearNow"></span> CineVerse · Movie data and images are provided by TMDB. This product uses the TMDB API but is not endorsed or certified by TMDB.</footer>
+<div class="modal" id="modal" role="dialog" aria-modal="true" aria-label="Movie details"><div class="modal-box"><button class="close" id="closeModal" aria-label="Close">×</button><div id="modalContent"></div></div></div>
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        async function fetchMovies() {
-            const grid = document.getElementById('movieGrid');
-            if (!grid) return;
-            
-            try {
-                const response = await fetch('/api/movies');
-                const data = await response.json();
-
-                if (data.success && data.items && data.items.length > 0) {
-                    grid.innerHTML = data.items.map(movie => `
-                        <div class="movie-card">
-                            <img src="${movie.poster}" alt="${movie.title}" onerror="this.src='https://via.placeholder.com/160x230?text=No+Poster'">
-                            <h3>${movie.title}</h3>
-                        </div>
-                    `).join('');
-                } else {
-                    grid.innerHTML = '<p class="loading-text">No movies found at the moment.</p>';
-                }
-            } catch (error) {
-                console.error('Error loading movies:', error);
-                grid.innerHTML = '<p class="loading-text">Failed to load content from server.</p>';
-            }
-        }
-
-        fetchMovies();
-    });
+(() => {
+const $ = s => document.querySelector(s);
+const IMG = 'https://image.tmdb.org/t/p/w500';
+const BACK = 'https://image.tmdb.org/t/p/original';
+const state = {mode:'trending',page:1,totalPages:1,query:'',genre:'',language:'',year:'',genres:[],items:[],api:localStorage.getItem('cineverse_tmdb_key')||''};
+$('#yearNow').textContent = new Date().getFullYear();
+if(state.api) $('#apiKey').value = state.api;
+for(let y=new Date().getFullYear();y>=1900;y--) { const o=document.createElement('option');o.value=y;o.textContent=y;$('#yearFilter').append(o); }
+function demoMovies(){
+ const names=[
+ ['The Shawshank Redemption',1994,9.3,'Drama'],['The Godfather',1972,9.2,'Crime'],['The Dark Knight',2008,9.0,'Action'],['12th Fail',2023,8.8,'Drama'],['Spirited Away',2001,8.6,'Animation'],['Parasite',2019,8.5,'Thriller'],['Interstellar',2014,8.7,'Sci-Fi'],['3 Idiots',2009,8.4,'Comedy'],['Your Name',2016,8.4,'Romance'],['Dangal',2016,8.3,'Drama'],['The Matrix',1999,8.2,'Sci-Fi'],['Train to Busan',2016,7.6,'Horror']
+ ];
+ const paths=['q6y0Go1tsGEsmtFryDOJo3dEmqu.jpg','3bhkrj58Vtu7enYsRolD1fZdja1.jpg','qJ2tW6WMUDux911r6m7haRef0WH.jpg','k3gW6bB2sS5x4f4w8v1e1W9w.jpg','39wmItIWsg5sZMyRUHLkWBcuVCM.jpg','7IiTTgloJzvGI1TAYymCfbfl3vT.jpg','gEU2QniE6E77NI6lCU6MxlNBvIx.jpg','66A9MqxoB0B1d2l9d0k0bQbQ.jpg','q719jXXEzOoYaps6bizCo0cdv0Q.jpg','6Wdl9N6dL0Hi0T1qJLWSz6gMLbd.jpg','f8W9x7n1x2Q5xV0d5k0lY1r1.jpg','y0i8f6v4p8n7m2c9.jpg'];
+ return names.map((n,i)=>({id:i+1,title:n[0],release_date:String(n[1])+'-01-01',vote_average:n[2],overview:'Sample catalogue entry. Add a TMDB API key to load verified movie information, posters, genres and current release data.',poster_path:null,genre_names:[n[3]],original_language:'en'}));
+}
+function setStatus(msg){$('#status').textContent=msg;$('#status').style.display=msg?'block':'none'}
+function setTitle(){const titles={trending:'Trending Movies',popular:'Popular Movies',now_playing:'Now Playing',top_rated:'Top Rated Movies',upcoming:'Upcoming Movies',classics:'Classic Movies',tv:'Popular TV Series',search:'Search Results'};$('#sectionTitle').textContent=titles[state.mode]||'Movies';document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.mode===state.mode));}
+async function apiFetch(path,params={}){
+ const token=state.api.trim(); if(!token) throw new Error('No API key configured');
+ const url=new URL('https://api.themoviedb.org/3'+path);
+ Object.entries({...params,language:'en-US',page:state.page}).forEach(([k,v])=>{if(v!==''&&v!=null)url.searchParams.set(k,v)});
+ const headers={accept:'application/json'}; if(token.length>70)headers.Authorization='Bearer '+token;else url.searchParams.set('api_key',token);
+ const r=await fetch(url,{headers});if(!r.ok)throw new Error(r.status===401?'API key not accepted. Check your TMDB key.':'TMDB request failed ('+r.status+').');return r.json();
+}
+async function loadGenres(){
+ if(!state.api)return;
+ try{const d=await apiFetch('/genre/movie/list',{page:undefined});state.genres=d.genres||[];const s=$('#genreFilter');s.innerHTML='<option value="">All genres</option>';state.genres.forEach(g=>{const o=document.createElement('option');o.value=g.id;o.textContent=g.name;s.append(o)})}catch(e){}
+}
+async function loadMovies(){
+ setTitle();$('#pageLabel').textContent='Page '+state.page;$('#movieGrid').innerHTML='';setStatus('Loading movies…');
+ if(!state.api){state.items=demoMovies();render();setStatus('Preview mode: sample titles only. Add a TMDB key above for live worldwide movie data.');return}
+ try{
+ let path,params={};
+ if(state.query){path='/search/multi';params.query=state.query;params.include_adult='false'}
+ else if(state.mode==='tv'){path='/tv/popular'}
+ else if(state.mode==='classics'){path='/discover/movie';params['primary_release_date.lte']='2000-12-31';params.sort_by='vote_average.desc';params['vote_count.gte']=100}
+ else if(state.mode==='trending'){path='/trending/movie/week'}
+ else {path='/movie/'+state.mode}
+ if(state.genre)params.with_genres=state.genre;
+ if(state.language)params.with_original_language=state.language;
+ if(state.year)params.primary_release_year=state.year;
+ const d=await apiFetch(path,params);state.items=(d.results||[]).filter(x=>x.media_type!=='person');state.totalPages=Math.min(d.total_pages||1,500);render();setStatus(state.items.length?'':'No results found. Try changing the filters.');
+ }catch(e){state.items=[];render();setStatus(e.message+' Preview mode can still be browsed without a key.');}
+}
+function render(){
+ const grid=$('#movieGrid');grid.innerHTML='';
+ state.items.forEach(m=>{
+ const title=m.title||m.name||'Untitled';const date=m.release_date||m.first_air_date||'';const year=date?date.slice(0,4):'Year unknown';
+ const card=document.createElement('article');card.className='card';
+ const poster=document.createElement('div');poster.className='poster';
+ if(m.poster_path){const img=document.createElement('img');img.loading='lazy';img.alt=title+' poster';img.src=IMG+m.poster_path;img.onerror=()=>{img.remove();poster.style.background='linear-gradient(135deg,#1d3448,#10151d)'};poster.append(img)}else{poster.style.background='linear-gradient(135deg,#1d3448,#10151d)';const no=document.createElement('div');no.textContent='🎬';no.style.cssText='display:grid;place-items:center;height:100%;font-size:48px';poster.append(no)}
+ const rating=document.createElement('span');rating.className='rating';rating.textContent='★ '+(Number(m.vote_average)?Number(m.vote_average).toFixed(1):'—');poster.append(rating);
+ const info=document.createElement('div');info.className='card-info';const h=document.createElement('h3');h.textContent=title;const meta=document.createElement('div');meta.className='meta';const yr=document.createElement('span');yr.textContent=year;const typ=document.createElement('span');typ.textContent=m.media_type==='tv'||state.mode==='tv'?'Series':'Movie';meta.append(yr,typ);const btn=document.createElement('button');btn.textContent='View details';btn.onclick=()=>showDetails(m);info.append(h,meta,btn);card.append(poster,info);grid.append(card);
+ });
+ $('#pageLabel').textContent='Page '+state.page;
+}
+function showDetails(m){
+ const title=m.title||m.name||'Untitled';const date=m.release_date||m.first_air_date||'Release date unavailable';
+ const image=m.poster_path?IMG+m.poster_path:'';
+ $('#modalContent').innerHTML='';
+ const wrap=document.createElement('div');wrap.className='modal-inner';
+ const img=document.createElement('img');img.alt=title+' poster';img.src=image||'';img.style.display=image?'block':'none';wrap.append(img);
+ const info=document.createElement('div');const h=document.createElement('h2');h.textContent=title;const dateP=document.createElement('p');dateP.textContent='Release: '+date+' · Rating: '+(Number(m.vote_average)?Number(m.vote_average).toFixed(1)+'/10':'Not rated');const overview=document.createElement('p');overview.textContent=m.overview||'No synopsis available.';const tags=document.createElement('div');tags.className='chips';(m.genre_names||[]).forEach(g=>{const c=document.createElement('span');c.className='chip';c.textContent=g;tags.append(c)});if(m.original_language){const c=document.createElement('span');c.className='chip';c.textContent='Language: '+m.original_language.toUpperCase();tags.append(c)}info.append(h,dateP,overview,tags);
+ if(state.api&&m.id){const btn=document.createElement('button');btn.className='primary';btn.style.marginTop='18px';btn.style.borderRadius='8px';btn.textContent='More details';btn.onclick=async()=>{try{const typ=m.media_type==='tv'||state.mode==='tv'?'tv':'movie';const d=await apiFetch('/'+typ+'/'+m.id,{page:undefined});overview.textContent=d.overview||m.overview||'No synopsis available.';dateP.textContent='Release: '+(d.release_date||d.first_air_date||date)+' · Rating: '+(d.vote_average||m.vote_average||'—')+'/10';tags.innerHTML='';(d.genres||[]).forEach(g=>{const c=document.createElement('span');c.className='chip';c.textContent=g.name;tags.append(c)})}catch(e){overview.textContent=e.message}};info.append(btn)}
+ wrap.append(info);$('#modalContent').append(wrap);$('#modal').classList.add('open');
+}
+document.querySelectorAll('[data-mode]').forEach(a=>a.addEventListener('click',()=>{state.mode=a.dataset.mode;state.query='';state.page=1;$('#searchInput').value='';loadMovies()}));
+$('#searchForm').addEventListener('submit',e=>{e.preventDefault();state.query=$('#searchInput').value.trim();state.mode=state.query?'search':'trending';state.page=1;loadMovies()});
+$('#genreFilter').addEventListener('change',e=>{state.genre=e.target.value;state.page=1;loadMovies()});
+$('#languageFilter').addEventListener('change',e=>{state.language=e.target.value;state.page=1;loadMovies()});
+$('#yearFilter').addEventListener('change',e=>{state.year=e.target.value;state.page=1;loadMovies()});
+$('#prevBtn').onclick=()=>{if(state.page>1){state.page--;loadMovies();window.scrollTo({top:0,behavior:'smooth'})}};
+$('#nextBtn').onclick=()=>{if(state.page<state.totalPages){state.page++;loadMovies();window.scrollTo({top:0,behavior:'smooth'})}};
+$('#saveKey').onclick=()=>{state.api=$('#apiKey').value.trim();if(state.api)localStorage.setItem('cineverse_tmdb_key',state.api);else localStorage.removeItem('cineverse_tmdb_key');loadGenres().then(loadMovies)};
+$('#exploreBtn').onclick=()=>document.querySelector('.toolbar').scrollIntoView({behavior:'smooth'});
+$('#heroTrending').onclick=()=>{state.mode='trending';state.query='';state.page=1;loadMovies();document.querySelector('.toolbar').scrollIntoView({behavior:'smooth'})};
+$('#closeModal').onclick=()=>$('#modal').classList.remove('open');
+$('#modal').addEventListener('click',e=>{if(e.target===$('#modal'))$('#modal').classList.remove('open')});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')$('#modal').classList.remove('open')});
+loadGenres().then(loadMovies);
+})();
 </script>
+</body>
+</html>
