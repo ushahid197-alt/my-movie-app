@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Movie App</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background-color: #0d1117; color: #e6edf3; font-family: 'Segoe UI', sans-serif; display: flex; height: 100vh; overflow: hidden; }
+        .sidebar { width: 220px; background-color: #161b22; padding: 20px 10px; display: flex; flex-direction: column; gap: 20px; border-right: 1px solid #30363d; flex-shrink: 0; }
+        .logo { font-size: 20px; font-weight: bold; color: #38bdf8; padding-left: 10px; }
+        .nav-menu { list-style: none; display: flex; flex-direction: column; gap: 5px; }
+        .nav-item { padding: 10px 15px; border-radius: 8px; cursor: pointer; color: #8b949e; font-size: 14px; }
+        .nav-item:hover, .nav-item.active { background-color: #21262d; color: #ffffff; font-weight: bold; }
+        .main-container { flex: 1; display: flex; flex-direction: column; overflow-y: auto; }
+        .top-bar { padding: 15px 30px; display: flex; align-items: center; background-color: rgba(13, 17, 23, 0.9); position: sticky; top: 0; z-index: 100; }
+        .search-box { width: 100%; max-width: 400px; }
+        .search-box input { width: 100%; padding: 10px 15px; border-radius: 20px; border: 1px solid #30363d; background-color: #161b22; color: #fff; outline: none; }
+        .content-section { padding: 20px 30px; }
+        .section-title { font-size: 18px; font-weight: bold; margin-bottom: 12px; color: #f0f6fc; }
+        .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 15px; }
+        .card { background-color: #161b22; border-radius: 10px; overflow: hidden; cursor: pointer; transition: transform 0.2s; }
+        .card:hover { transform: scale(1.05); }
+        .card img { width: 100%; height: 190px; object-fit: cover; }
+        .card-title { font-size: 12px; padding: 8px; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #c9d1d9; }
+        #player-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 1000; }
+        .modal-bar { position: absolute; top: 15px; right: 20px; left: 20px; display: flex; justify-content: space-between; z-index: 1001; }
+        .btn { padding: 8px 16px; border-radius: 6px; border: none; font-weight: bold; cursor: pointer; }
+        .btn-close { background-color: #ef4444; color: white; }
+        .btn-switch { background-color: #0284c7; color: white; }
+        iframe { width: 100%; height: 100%; border: none; padding-top: 50px; }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="logo">▶ MY MOVIE APP</div>
+        <ul class="nav-menu">
+            <li class="nav-item active">🏠 Latest Movies</li>
+        </ul>
+    </div>
+    <div class="main-container">
+        <div class="top-bar">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Search movies..." onkeyup="searchMovies()">
+            </div>
+        </div>
+        <div class="content-section">
+            <div class="section-title">🔥 Latest Releases</div>
+            <div class="grid-container" id="movieGrid">Loading content from server...</div>
+        </div>
+    </div>
+    <div id="player-modal">
+        <div class="modal-bar">
+            <button class="btn btn-switch" onclick="switchServer()">🔄 Change Server (<span id="serverNum">1</span>/3)</button>
+            <button class="btn btn-close" onclick="closePlayer()">❌ Close</button>
+        </div>
+        <iframe id="videoPlayer" src="" allowfullscreen></iframe>
+    </div>
+    <script>
+        let moviesData = [], currentTitle = "", serverIndex = 0;
+        async function loadMovies() {
+            try {
+                let res = await fetch('/api/movies');
+                let data = await res.json();
+                if (data.success) { moviesData = data.items; renderGrid(moviesData); }
+            } catch (e) { document.getElementById("movieGrid").innerHTML = "Error loading."; }
+        }
+        function renderGrid(items) {
+            let grid = document.getElementById("movieGrid");
+            grid.innerHTML = "";
+            items.forEach(m => {
+                let card = document.createElement("div");
+                card.className = "card";
+                card.onclick = () => playMovie(m.title);
+                card.innerHTML = `<img src="${m.poster}" alt="${m.title}"><div class="card-title">${m.title}</div>`;
+                grid.appendChild(card);
+            });
+        }
+        function playMovie(title) {
+            currentTitle = title; serverIndex = 0; loadPlayer();
+            document.getElementById("player-modal").style.display = "block";
+        }
+        function loadPlayer() {
+            document.getElementById("serverNum").innerText = serverIndex + 1;
+            let t = encodeURIComponent(currentTitle);
+            let url = serverIndex === 0 ? `https://vidsrc.cc/v2/embed/movie/${t}` : serverIndex === 1 ? `https://www.2embed.cc/embed/movie/${t}` : `https://player.autoembed.cc/embed/movie/${t}`;
+            document.getElementById("videoPlayer").src = url;
+        }
+        function switchServer() { serverIndex = (serverIndex + 1) % 3; loadPlayer(); }
+        function closePlayer() { document.getElementById("videoPlayer").src = ""; document.getElementById("player-modal").style.display = "none"; }
+        function searchMovies() {
+            let q = document.getElementById("searchInput").value.toLowerCase();
+            renderGrid(moviesData.filter(m => m.title.toLowerCase().includes(q)));
+        }
+        loadMovies();
+    </script>
+</body>
+</html>
